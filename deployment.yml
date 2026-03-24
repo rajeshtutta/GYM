@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gymdeploy
+  labels:
+    app: gym
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: gym
+  template:
+    metadata:
+      labels:
+        app: gym
+    spec:
+      containers:
+      - name: gymcontainer
+        image: rajeshtutta123/gym-life:latest
+        ports:
+        - containerPort: 80
