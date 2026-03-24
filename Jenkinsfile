@@ -1,39 +1,37 @@
 pipeline {
-agent any
+    agent any
 
-environment {
-    DOCKER_IMAGE = "rajeshtutta123/gym-life"
-    AWS_CREDS = credentials('aws-creds')
+    environment {
+        DOCKER_IMAGE = "rajeshtutta123/gym-life"
+        AWS_CREDS = credentials('aws-creds')
         AWS_DEFAULT_REGION = 'ap-south-1'
-}
-
-stages {
-
-    stage('Clone Repository') {
-        steps {
-            git branch: 'main', url: 'https://github.com/rajeshtutta/GYM.git'
-        }
     }
 
-    stage('Build Docker Image') {
-        steps {
-            sh 'docker build -t $DOCKER_IMAGE:latest .'
-        }
-    }
+    stages {
 
-    stage('Push Docker Image') {
-        steps {
-            withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                sh 'echo $PASS | docker login -u $USER --password-stdin'
-                sh 'docker push $DOCKER_IMAGE:latest'
-                sh 'docker logout'
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/rajeshtutta/GYM.git'
             }
         }
-    }
 
-    stage('Deploy') {
+        stage('Build Docker Image') {
             steps {
-                stage('Deploy to EKS') {
+                sh 'docker build -t $DOCKER_IMAGE:latest .'
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
+                    sh 'docker push $DOCKER_IMAGE:latest'
+                    sh 'docker logout'
+                }
+            }
+        }
+
+        stage('Deploy to EKS') {
             steps {
                 sh '''
                 export AWS_ACCESS_KEY_ID=$AWS_CREDS_USR
@@ -43,8 +41,8 @@ stages {
                 kubectl apply -f deployment.yml
                 kubectl apply -f service.yml
                 '''
+            }
         }
-    }
-}
 
+    }
 }
