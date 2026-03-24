@@ -3,9 +3,8 @@ agent any
 
 environment {
     DOCKER_IMAGE = "rajeshtutta123/gym-life"
-    AWS_ACCESS_KEY_ID = credentials('aws-creds').username
-    AWS_SECRET_ACCESS_KEY = credentials('aws-creds').password
-    AWS_DEFAULT_REGION = 'ap-south-1'
+    AWS_CREDS = credentials('aws-creds')
+        AWS_DEFAULT_REGION = 'ap-south-1'
 }
 
 stages {
@@ -33,6 +32,8 @@ stages {
     }
 
     stage('Deploy') {
+            steps {
+                stage('Deploy to EKS') {
             steps {
                 sh '''
                 export AWS_ACCESS_KEY_ID=$AWS_CREDS_USR
