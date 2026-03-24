@@ -32,10 +32,16 @@ stages {
         }
     }
 
-    stage('Deploy to Kubernetes') {
-        steps {
-            sh 'kubectl apply -f deployment.yml'
-            sh 'kubectl apply -f service.yml'
+    stage('Deploy') {
+            steps {
+                sh '''
+                export AWS_ACCESS_KEY_ID=$AWS_CREDS_USR
+                export AWS_SECRET_ACCESS_KEY=$AWS_CREDS_PSW
+
+                aws eks update-kubeconfig --region ap-south-1 --name mycluster
+                kubectl apply -f deployment.yml
+                kubectl apply -f service.yml
+                '''
         }
     }
 }
