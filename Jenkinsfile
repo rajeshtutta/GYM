@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "rajeshtutta123/gym-life"
         AWS_CREDS = credentials('aws-creds')
-        AWS_DEFAULT_REGION = 'ap-south-1'
+        AWS_DEFAULT_REGION = 'us-east-1'
     }
 
     stages {
